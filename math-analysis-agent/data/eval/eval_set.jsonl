@@ -1,0 +1,30 @@
+{"id": "t01", "question": "为什么有理数集是可列的", "expect_chapter": "第一章 集合与映射", "expect_keywords": ["可列", "有理数"]}
+{"id": "t02", "question": "可列个可列集的并集还是可列集吗", "expect_chapter": "第一章 集合与映射", "expect_keywords": ["可列"]}
+{"id": "t03", "question": "三角不等式怎么写", "expect_chapter": "第一章 集合与映射", "expect_keywords": ["三角不等式"]}
+{"id": "t04", "question": "什么是上确界，它和下确界有什么区别", "expect_chapter": "第二章 数列极限", "expect_keywords": ["上确界", "确界"]}
+{"id": "t05", "question": "确界存在定理为什么体现了实数系的连续性", "expect_chapter": "第二章 数列极限", "expect_keywords": ["确界"]}
+{"id": "t06", "question": "单调有界数列为什么一定收敛", "expect_chapter": "第二章 数列极限", "expect_keywords": ["单调有界"]}
+{"id": "t07", "question": "用夹逼准则求数列极限", "expect_chapter": "第二章 数列极限", "expect_keywords": ["夹逼"]}
+{"id": "t08", "question": "Stolz 定理怎么用来求数列极限", "expect_chapter": "第二章 数列极限", "expect_keywords": ["Stolz"]}
+{"id": "t09", "question": "Cauchy 收敛准则怎么判断数列收敛", "expect_chapter": "第二章 数列极限", "expect_keywords": ["Cauchy"]}
+{"id": "t10", "question": "函数在一点连续的定义是什么", "expect_chapter": "第三章 函数极限与连续函数", "expect_keywords": ["连续"]}
+{"id": "t11", "question": "一致连续和普通连续到底差在哪里", "expect_chapter": "第三章 函数极限与连续函数", "expect_keywords": ["一致连续"]}
+{"id": "t12", "question": "间断点怎么分类", "expect_chapter": "第三章 函数极限与连续函数", "expect_keywords": ["间断"]}
+{"id": "t13", "question": "等价无穷小替换什么时候可以用", "expect_chapter": "第三章 函数极限与连续函数", "expect_keywords": ["等价无穷小"]}
+{"id": "t14", "question": "复合函数的极限怎么计算", "expect_chapter": "第三章 函数极限与连续函数", "expect_keywords": ["复合"]}
+{"id": "t15", "question": "可导一定连续吗，反过来呢", "expect_chapter": "第四章 微分", "expect_keywords": ["可导", "连续"]}
+{"id": "t16", "question": "导数的几何意义是什么", "expect_chapter": "第四章 微分", "expect_keywords": ["导数"]}
+{"id": "t17", "question": "函数的微分是怎么定义的", "expect_chapter": "第四章 微分", "expect_keywords": ["微分"]}
+{"id": "t18", "question": "高阶导数怎么求", "expect_chapter": "第四章 微分", "expect_keywords": ["高阶", "导数"]}
+{"id": "t19", "question": "Rolle 定理需要满足哪几个条件，缺一个会怎样", "expect_chapter": "第五章 微分中值定理及其应用", "expect_keywords": ["Rolle"]}
+{"id": "t20", "question": "Lagrange 中值定理的结论和几何意义", "expect_chapter": "第五章 微分中值定理及其应用", "expect_keywords": ["Lagrange"]}
+{"id": "t21", "question": "Cauchy 中值定理和 Lagrange 中值定理的关系", "expect_chapter": "第五章 微分中值定理及其应用", "expect_keywords": ["Cauchy"]}
+{"id": "t22", "question": "Taylor 公式带 Peano 余项的形式", "expect_chapter": "第五章 微分中值定理及其应用", "expect_keywords": ["Taylor"]}
+{"id": "t23", "question": "怎么用导数判断函数的单调性", "expect_chapter": "第五章 微分中值定理及其应用", "expect_keywords": ["单调"]}
+{"id": "t24", "question": "原函数和不定积分是什么关系", "expect_chapter": "第六章 不定积分", "expect_keywords": ["原函数"]}
+{"id": "t25", "question": "分部积分公式怎么用", "expect_chapter": "第六章 不定积分", "expect_keywords": ["分部积分"]}
+{"id": "t26", "question": "换元积分法有哪两类", "expect_chapter": "第六章 不定积分", "expect_keywords": ["换元"]}
+{"id": "t27", "question": "定积分的定义和可积条件", "expect_chapter": "第七章 定积分", "expect_keywords": ["定积分", "可积"]}
+{"id": "t28", "question": "Darboux 定理说的是什么", "expect_chapter": "第七章 定积分", "expect_keywords": ["Darboux"]}
+{"id": "t29", "question": "Newton-Leibniz 公式的成立条件", "expect_chapter": "第七章 定积分", "expect_keywords": ["Newton", "Leibniz"]}
+{"id": "t30", "question": "反常积分怎么判断收敛还是发散", "expect_chapter": "第八章 反常积分", "expect_keywords": ["反常积分", "收敛"]}

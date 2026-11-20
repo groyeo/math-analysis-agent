@@ -1,0 +1,22 @@
+# ===== 核心运行依赖 =====
+streamlit>=1.36,<2.0
+langgraph>=0.2.0
+openai>=1.40.0
+sympy>=1.13
+pydantic>=2.7
+pyyaml>=6.0
+python-dotenv>=1.0
+rank-bm25>=0.2.2
+numpy>=1.26
+
+# ===== 向量检索（混合检索的向量通路，默认后端）=====
+# fastembed：ONNX 运行时，不需要 torch，约 60MB；首次运行会下载
+# BAAI/bge-small-zh-v1.5（约 95MB）。不装则自动降级为 BM25 + 元数据检索。
+fastembed>=0.3.0
+
+# 可选：改用 Chroma 作为向量存储（体积约 2GB 含 torch，一般不需要）
+# chromadb>=0.5.0
+# sentence-transformers>=3.0.0
+
+# ===== 可选：更精确的 token 计数 =====
+# tiktoken>=0.7.0

@@ -1,0 +1,76 @@
+# 节点模型分级（见方案 15.1）
+# 解题链路用强模型；解析/整理用便宜小模型；审核强制使用不同厂商的异构模型。
+# 写法 ${VAR:-默认值}：.env 里填了就用 .env 的值，没填就用这里的默认值。
+# 价格单位：元 / 1K tokens（按官方价折算，仅用于成本预算与熔断，可自行调整）
+
+solver:
+  provider: dashscope
+  base_url: "${SOLVER_BASE_URL:-https://dashscope.aliyuncs.com/compatible-mode/v1}"
+  model: "${SOLVER_MODEL:-qwen-max}"
+  api_key_env: SOLVER_API_KEY
+  temperature: 0.2
+  # 现在用的 DeepSeek-V4.1-Flash 是「带思维链」的模型：reasoning_content 也计入
+  # completion 预算，且思考往往比正文长好几倍。
+  # 实测傅里叶级数那道题：4096 时 thinking 写了 11447 字、正文 0 字、
+  # finish_reason=length（表现为「无法解析为 JSON」）；8192 时才正常收尾。
+  # 所以起点给 8192，仍然被截断就自动翻倍到 16384（见 llm/client.py）。
+  max_tokens: 8192
+  max_tokens_ceiling: 16384
+  # qwen-max：输入约 ¥0.0024 / 输出约 ¥0.0096 每 1K tokens
+  price_in_per_1k: 0.0024
+  price_out_per_1k: 0.0096
+
+reviewer:
+  provider: dashscope          # 异构审核：应尽量与 solver 不同厂商
+  base_url: "${REVIEWER_BASE_URL:-https://dashscope.aliyuncs.com/compatible-mode/v1}"
+  model: "${REVIEWER_MODEL:-qwen-plus}"
+  api_key_env: REVIEWER_API_KEY
+  temperature: 0.1
+  # 审核只需输出断言+质疑清单，但同样可能带思维链，被截断会丢掉 issues
+  max_tokens: 2048
+  max_tokens_ceiling: 4096
+  # qwen-plus：输入约 ¥0.0008 / 输出约 ¥0.002 每 1K tokens
+  price_in_per_1k: 0.0008
+  price_out_per_1k: 0.002
+  # 说明：当前 solver/reviewer 同在百炼平台，异构性弱于"跨厂商"理想状态。
+  # 拿到其他厂商的 Key 后，只需改 .env 里的 REVIEWER_* 三行即可恢复严格异构。
+
+light:
+  provider: dashscope
+  base_url: "${LIGHT_BASE_URL:-https://dashscope.aliyuncs.com/compatible-mode/v1}"
+  model: "${LIGHT_MODEL:-qwen-flash}"
+  api_key_env: LIGHT_API_KEY
+  temperature: 0.0
+  # 结构化输出只有一两百字，预算给大反而拖慢（模型会更晚收尾）。
+  # 但推理型小模型会先写思考，700 会被截断成空正文，所以留一级翻倍余量。
+  max_tokens: 1024
+  max_tokens_ceiling: 2048
+  # qwen-flash：输入约 ¥0.00015 / 输出约 ¥0.0015 每 1K tokens
+  price_in_per_1k: 0.00015
+  price_out_per_1k: 0.0015
+  # 未配置独立 key 时回退到 solver
+  fallback_to: solver
+
+# ---------------------------------------------------------------- 视觉（题目照片）
+# 用途：把手机拍的题目照片转成 LaTeX 题目文本，只在上传图片这条入口用到。
+# 选型依据（2026-11 实测，ModelScope 可用模型表共 37 个）：
+#   - dashscope 的 qwen-vl-ocr / qwen-vl-plus / qwen3-vl-plus 全部 401（key 已失效）
+#   - ModelScope 上 Qwen2.5-VL / Qwen3-VL 系列全部 "has no provider supported"
+#   - Intern-S1 / Intern-S1-mini / InternVL3_5 均 401（无权限）
+#   - 只有 Intern-S2-Preview 可用：1.6s、104 tokens 就把中文题干 + 分式正确转成
+#     $$ \lim_{x \to 0} \frac{e^x - 1 - x}{x^2} $$
+# 模型表会变，换模型前先跑 scripts/probe_vl2.py 实测，别照抄文档。
+vision:
+  provider: modelscope
+  base_url: "${VISION_BASE_URL:-https://api-inference.modelscope.cn/v1}"
+  model: "${VISION_MODEL:-Shanghai_AI_Laboratory/Intern-S2-Preview}"
+  api_key_env: VISION_API_KEY
+  fallback_key_env: SOLVER_API_KEY   # 没单独配 VISION_API_KEY 就复用 solver 的
+  temperature: 0.0
+  # 一道题 + LaTeX 通常几十到几百 token；给 2048 是因为个别题目会被截断在
+  # 公式中间（实测最后一行的分段函数被切掉），留足余量并允许再翻一倍。
+  max_tokens: 2048
+  max_tokens_ceiling: 4096
+  # 当前走 ModelScope 免费推理额度，不计费；保留字段以兼容成本核算
+  price_in_per_1k: 0.0
+  price_out_per_1k: 0.0

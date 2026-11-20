@@ -1,0 +1,56 @@
+# 混合检索配置（见方案 7.4）
+retrieval:
+  vector:
+    enabled: true                 # 依赖缺失时自动降级为纯 BM25
+    backend: local                # local | api | chroma | auto
+                                  #   local  = fastembed + BGE-small-zh 的 ONNX 本地推理（离线、免费）
+                                  #   api    = 云端 Embedding 接口 + 本地 npz（需要可用额度）
+                                  #   chroma = 本地 BGE + Chroma（需 sentence-transformers，体积大）
+                                  #   auto   = local → api → chroma 依次尝试
+                                  # 2026-11 起默认 local：云端 qwen embedding 免费额度已耗尽，
+                                  # 且 ModelScope 全表 37 个模型里没有任何 embedding 模型。
+    persist_dir: "knowledge_base/chroma_db"
+    embedding_model: "BAAI/bge-small-zh-v1.5"
+    collection: "math_analysis"
+    # --- local 通路 ---
+    local_model: "BAAI/bge-small-zh-v1.5"
+    local_embed_file: "knowledge_base/embeddings/chunks_local.npz"
+    # --- api 通路（备选）---
+    embed_file: "knowledge_base/embeddings/chunks.npz"
+    api_model: "qwen3.7-text-embedding-flash"
+    api_base_url: "https://dashscope.aliyuncs.com/compatible-mode/v1"
+    api_key_env: "EMBED_API_KEY"  # 留空则自动复用 REVIEWER_API_KEY
+  bm25:
+    enabled: true
+    chunk_file: "knowledge_base/chunks/chunks.jsonl"
+  fusion:
+    # rrf 只看排名不看分数，把 BM25 的强匹配压平成常数分（1/(k+rank)），
+    # 实测 Recall@5 从 93.3% 掉到与单路相当、Top-1 也偏低；
+    # 换 weighted 后 Recall@5 93.3% / Top-1 73.3% / MRR 0.805（30 题评估集）。
+    method: weighted              # rrf | weighted
+    rrf_k: 60
+    # 词法略重于语义：中文数学教材里定理名/符号的精确匹配比同义泛化更关键，
+    # 0.4/0.6 与 0.3/0.7 指标相同，取更均衡的一侧。
+    vector_weight: 0.4
+    bm25_weight: 0.6
+  filter:
+    strict_chapter: false         # true 时强制同章节硬过滤
+    metadata_fields: ["chapter", "section", "content_type", "topic"]
+  # 精排（rerank）：粗召回排序后，用交叉编码器（bge-reranker）对候选逐条重打分。
+  # 实测粗召回（每路 20 条）已把正确答案 100% 捞进池子，瓶颈在「排序」而非「召回」，
+  # 精排专门修正「Darboux→达布」这类术语变体导致的错位。ONNX 运行时、无 torch。
+  rerank:
+    enabled: true                 # 模型缺失时自动跳过精排，不影响主链路
+    model: "BAAI/bge-reranker-base"   # 首次运行下载约 1.0GB；可换 int8 版 0.57GB
+    candidate_top_n: 8            # 送精排的候选数（8 条约 5s；正确答案几乎都在前 8）
+    rerank_weight: 0.7            # 精排分 0.7 / 粗召回分 0.3 加权
+    # 送进交叉编码器的正文长度：耗时与长度近似线性（1000 字 → 13s，320 字 → 5s），
+    # 而块级相关度看开头就够，截断几乎不影响排序。
+    max_doc_chars: 320
+  top_k: 5
+  candidate_chunks: 20            # 每路先取候选数，再融合（≥ candidate_top_n）
+  # 让 LLM 先产出候选定理名清单再检索。默认关闭：这一步每次解题都要多调一次模型
+  # （约 1.5~2s），而命中主要来自 BM25 词项 + 元数据加权；30 题评估集上开/关的
+  # Recall@5 差异在噪声范围内。需要更强调定理精确匹配时再打开。
+  candidate_theorems: false
+  recall_target: 0.80             # Recall@5 验收目标

@@ -1,0 +1,5 @@
+{"id": "q1", "question": "计算 lim(x→0) (e^x - 1 - x)/x^2", "relevant": ["c04", "c05", "c03"]}
+{"id": "q2", "question": "求 f(x)=x^3 在 [0,1] 上满足拉格朗日中值定理的 ξ", "relevant": ["c11", "c08"]}
+{"id": "q3", "question": "判断级数 Σ 1/n^2 是否收敛", "relevant": ["c17", "c18"]}
+{"id": "q4", "question": "求 ∫ x e^x dx", "relevant": ["c15", "c13"]}
+{"id": "q5", "question": "讨论 f(x)=sin(1/x) 在 x=0 的间断类型", "relevant": ["c06", "c07"]}

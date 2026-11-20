@@ -1,0 +1,22 @@
+app:
+  name: "MathAnalysis Agent"
+  version: "2.2"
+  # 审核不通过后回到「解题」节点重试的最大次数（见方案 4.2 / 5.2）
+  # 默认 0：一次重试要把解题再跑一遍，端到端耗时翻倍；实测多数 issue 是表述严谨性
+  # 而非结论错误，让用户在报告里直接看 issue 更划算。界面上可临时开启。
+  max_retries: 0
+  # 快速模式：把「解题规划」合进「解题」一次产出，solver 只调 1 次。
+  # false 则恢复「规划 → 解题」两段式（更细的方法对比，但慢 ~40%）。
+  fast_mode: true
+  # 题目结构化是否交给模型。默认 false：改用本地规则（章节/知识点/条件/题型），
+  # 省掉关键路径上一次 8~11s 的 LLM 调用；题目原文仍完整交给解题模型。
+  analyze_llm: false
+  # 单次外部 API 超时（秒）
+  # 注意：solver 是带思维链的推理模型，单次常 40~80s。原来给 60s，
+  # 实测频繁超时 → 重试 → 端到端拖到 220s+ 还拿不到解答。给到 120s。
+  request_timeout: 120
+  # 单题端到端超时（秒）
+  pipeline_timeout: 240
+  log_dir: "outputs/logs"
+  history_file: "outputs/history.jsonl"
+  default_top_k: 5
